@@ -1,3 +1,161 @@
 loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua'))()
 
 loadstring(game:HttpGet("https://pastefy.app/K1QXtdXd/raw"))()
+
+--// Thunder z Hub Loading Screen
+--// Creates all UI elements programmatically.
+
+local CoreGui = game:GetService("CoreGui")
+
+-- Check for and remove any existing loading UI from this script
+if CoreGui:FindFirstChild("ThunderZHubLoading") then
+    CoreGui.ThunderZHubLoading:Destroy()
+end
+
+-- Main ScreenGui container
+local LoadingScreen = Instance.new("ScreenGui")
+LoadingScreen.Name = "ThunderZHubLoading"
+LoadingScreen.Parent = CoreGui
+LoadingScreen.IgnoreGuiInset = true
+LoadingScreen.ResetOnSpawn = false
+
+-- Full-screen background
+local Background = Instance.new("Frame")
+Background.Name = "Background"
+Background.Parent = LoadingScreen
+Background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Background.BorderSizePixel = 0
+Background.Size = UDim2.new(1, 0, 1, 0)
+
+-- Add stars to the background
+for i = 1, 150 do
+    local Star = Instance.new("Frame")
+    local Corner = Instance.new("UICorner")
+    
+    local size = math.random(1, 4)
+    local positionX = math.random()
+    local positionY = math.random()
+    
+    Star.Name = "Star"
+    Star.Parent = Background
+    Star.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Star.BorderSizePixel = 0
+    Star.Size = UDim2.fromOffset(size, size)
+    Star.Position = UDim2.fromScale(positionX, positionY)
+    
+    Corner.CornerRadius = UDim.new(0.5, 0)
+    Corner.Parent = Star
+end
+
+-- Main icon above the title
+local Icon = Instance.new("ImageLabel")
+Icon.Name = "Icon"
+Icon.Parent = Background
+Icon.Image = "rbxassetid://5962000334" -- Thunder icon
+Icon.BackgroundTransparency = 1
+Icon.Size = UDim2.fromOffset(128, 128)
+Icon.AnchorPoint = Vector2.new(0.5, 0.5)
+Icon.Position = UDim2.new(0.5, 0, 0.25, 0)
+
+-- Main title text
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Parent = Background
+Title.Text = "Thunder z Hub"
+Title.Font = Enum.Font.SourceSansBold
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(0.8, 0, 0.2, 0)
+Title.AnchorPoint = Vector2.new(0.5, 0.5)
+Title.Position = UDim2.new(0.5, 0, 0.45, 0)
+Title.TextScaled = true
+
+-- Progress bar background
+local BarBackground = Instance.new("Frame")
+local BarBackgroundCorner = Instance.new("UICorner")
+BarBackground.Name = "BarBackground"
+BarBackground.Parent = Background
+BarBackground.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+BarBackground.BorderSizePixel = 0
+BarBackground.Size = UDim2.new(0.5, 0, 0.05, 0)
+BarBackground.AnchorPoint = Vector2.new(0.5, 0.5)
+BarBackground.Position = UDim2.new(0.5, 0, 0.6, 0)
+BarBackgroundCorner.CornerRadius = UDim.new(0.5, 0)
+BarBackgroundCorner.Parent = BarBackground
+
+-- Progress bar foreground (the part that fills up)
+local BarForeground = Instance.new("Frame")
+local BarForegroundCorner = Instance.new("UICorner")
+BarForeground.Name = "BarForeground"
+BarForeground.Parent = BarBackground
+BarForeground.BackgroundColor3 = Color3.fromRGB(25, 125, 225)
+BarForeground.BorderSizePixel = 0
+BarForeground.Size = UDim2.new(0, 0, 1, 0) -- Starts at 0% width
+BarForegroundCorner.CornerRadius = UDim.new(0.5, 0)
+BarForegroundCorner.Parent = BarForeground
+
+-- Percentage text displayed on the bar
+local PercentageText = Instance.new("TextLabel")
+PercentageText.Name = "PercentageText"
+PercentageText.Parent = BarBackground
+PercentageText.Text = "0%"
+PercentageText.Font = Enum.Font.SourceSansBold
+PercentageText.TextColor3 = Color3.fromRGB(255, 255, 255)
+PercentageText.BackgroundTransparency = 1
+PercentageText.Size = UDim2.new(1, 0, 1, 0)
+PercentageText.TextScaled = true
+
+-- Status text below the progress bar
+local StatusText = Instance.new("TextLabel")
+StatusText.Name = "StatusText"
+StatusText.Parent = Background
+StatusText.Text = "Initializing..."
+StatusText.Font = Enum.Font.SourceSans
+StatusText.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusText.BackgroundTransparency = 1
+StatusText.Size = UDim2.new(1, 0, 0.1, 0)
+StatusText.AnchorPoint = Vector2.new(0.5, 0.5)
+StatusText.Position = UDim2.new(0.5, 0, 0.68, 0)
+StatusText.TextScaled = true
+
+-- Animate the loading process
+local tweenService = game:GetService("TweenService")
+local loadingTime = 3 -- Total duration of the loading in seconds
+
+local loadingTween = tweenService:Create(BarForeground, TweenInfo.new(loadingTime, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)})
+loadingTween:Play()
+
+-- Update text labels during the loading
+for i = 0, 100 do
+    PercentageText.Text = tostring(math.floor(i)) .. "%"
+    if i < 25 then
+        StatusText.Text = "Contacting services..."
+    elseif i < 50 then
+        StatusText.Text = "Verifying assets..."
+    elseif i < 75 then
+        StatusText.Text = "Injecting..."
+    else
+        StatusText.Text = "Finalizing..."
+    end
+    wait(loadingTime / 100)
+end
+
+StatusText.Text = "Done."
+wait(0.5)
+
+-- Fade out effect before destroying the UI
+for i = 1, 10 do
+    local transparency = i / 10
+    Background.BackgroundTransparency = transparency
+    for _, child in ipairs(Background:GetDescendants()) do
+        if child:IsA("GuiObject") then
+            pcall(function() child.BackgroundTransparency = transparency end)
+            pcall(function() child.ImageTransparency = transparency end)
+            pcall(function() child.TextTransparency = transparency end)
+        end
+    end
+    wait(0.05)
+end
+
+-- Clean up and remove the UI
+LoadingScreen:Destroy()
